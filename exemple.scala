@@ -1,10 +1,13 @@
-val textFile = sc.textFile("fr.openfoodfacts.org.products.csv")
-val burglar = textFile.map(_.split("\t").filter(_.size > 8).map(a => (a(3),a(6))))
-for ((a,e) <- burglar){
-	println(a)
-}
-val myfiltered = burglar.filter(line => line.contains("BURGLARY"))
-println(myfiltered.count())
-for(a <- myfiltered){
-	println(a)
-}
+import scala.io.Source
+import org.apache.spark.rdd.RDD
+/* fin config */
+val textFile = sc.textFile("JanusaryClinton.csv")
+val myfilter = textFile.filter(line => line.contains("BURGLAR"))
+val filtersplitted = myfilter.map(_.split(","))
+val mappedfilteredsplitted = filtersplitted.map(a=> (a(0),1))
+val date = mappedfilteredsplitted.map(_._1.split(" ")(0))
+val count = mappedfilteredsplitted.map(_._2)
+val mapop = date zip count
+val myreduce = mapop.reduceByKey(_ + _)
+myreduce.collect.foreach(println)
+
